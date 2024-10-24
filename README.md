@@ -1,4 +1,4 @@
-#Semantic Alignment of fMRI Data Using CLIP
+# Semantic Alignment of fMRI Data Using CLIP
 
 1. Problem Statement
 
@@ -39,6 +39,46 @@ Epochs: The x-axis represents the number of training epochs (0 to 20).
 Loss: The y-axis represents the training loss, which shows a steep decline during the first few epochs, followed by a more gradual decline.
 
 The final loss values indicate a good level of alignment, with the model able to capture correlations between fMRI data and semantic image information.
+
+Epoch [1/20], Loss: 1.0316689014434814
+
+Epoch [2/20], Loss: 0.6602054834365845
+
+Epoch [3/20], Loss: 0.45991581678390503
+
+Epoch [4/20], Loss: 0.424766480922699
+
+Epoch [5/20], Loss: 0.24030500650405884
+
+Epoch [6/20], Loss: 0.12421280145645142
+
+Epoch [7/20], Loss: 0.07311588525772095
+
+Epoch [8/20], Loss: 0.046590566635131836
+
+Epoch [9/20], Loss: 0.02980726957321167
+
+Epoch [10/20], Loss: 0.022791564464569092
+
+Epoch [11/20], Loss: 0.020026862621307373
+
+Epoch [12/20], Loss: 0.018105506896972656
+
+Epoch [13/20], Loss: 0.016220033168792725
+
+Epoch [14/20], Loss: 0.014258623123168945
+
+Epoch [15/20], Loss: 0.012210428714752197
+
+Epoch [16/20], Loss: 0.010184764862060547
+
+Epoch [17/20], Loss: 0.008358955383300781
+
+Epoch [18/20], Loss: 0.006860613822937012
+
+Epoch [19/20], Loss: 0.0057160258293151855
+
+Epoch [20/20], Loss: 0.004875659942626953
 
 ![image](https://github.com/user-attachments/assets/2105a83a-aa67-4b7f-9c40-65d42390aac9)
 
