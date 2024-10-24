@@ -1,152 +1,61 @@
-<!-- # **BOLD5000 2.0: a massive-scale fMRI dataset to advance the study of human and machine vision** -->
-# **BOLD5000, a public fMRI dataset while viewing 5000 visual images**
-![image](https://user-images.githubusercontent.com/35503086/135143518-f7904f98-d0c2-4185-b9b3-83d4ea53f10f.png)
+Semantic Alignment of fMRI Data Using CLIP
 
-### [Project page](bold5000.org) | [Paper](https://www.nature.com/articles/s41597-019-0052-3) | [List Serv](https://docs.google.com/forms/d/e/1FAIpQLScdxRc7eKOpZv5Yc6sfzWP5gi0egkDtNSPedVqpvtx_3yw4pg/viewform)
+1. Problem Statement
 
-BOLD5000, a public fMRI dataset while viewing 5000 visual images.<br>
-[Nadine Chang](nadinechang.com), [John A. Pyles](https://www.linkedin.com/in/john-pyles-37401a7a/), [Jacob Prince](https://jacob-prince.github.io), Austin Marcus, [Michael J. Tarr](https://sites.google.com/andrew.cmu.edu/tarrlab/people/michael-j-tarr?authuser=0), [Elissa M. Aminoff](https://www.fordham.edu/info/21660/faculty_and_staff/9370/elissa_aminoff/1) <br>
-Nature Scientific Data 2019.
+The objective of this task was to explore the provided fMRI dataset and implement a CLIP-based contrastive tuning approach to align the fMRI data with semantic information derived from images or textual descriptions. The goal was to determine an effective alignment between fMRI signals and meaningful image representations, allowing us to understand the correlations between visual stimuli and brain activity. The dataset used for this task was obtained from the BOLD5000 project, containing a large number of fMRI scans corresponding to various visual stimuli.
 
-BOLD5000 is a human functional MRI (fMRI) study that includes almost 5,000 distinct images depicting real-world scenes, incorporating images from the Scene UNderstanding (SUN), Common Objects in Context (COCO), and ImageNet datasets. The scale and diversity of these image datasets, combined with a slow event-related fMRI design, enables fine-grained exploration into the neural representation of a wide range of visual features, categories, and semantics.
+2. Data Understanding and Preprocessing
 
-**[BOLD5000 Release 2.0](https://figshare.com/s/bbaf45dca1b1b873ddfa) is a complete re-release of functional data from BOLD5000, with optimized procedures for GLM estimation of brain-wide percent signal change in response to the experimental stimuli, yielding significant increases in the reliability of BOLD signal estimates compared to the initial data release.**
+The BOLD5000 dataset contains fMRI scans recorded from subjects viewing different images. Each scan represents the brain's response to a specific visual stimulus. The data structure is a four-dimensional array, with three spatial dimensions and one temporal dimension corresponding to each voxel in the brain over time. The primary challenge with the fMRI data was the presence of high-dimensional information, along with potential missing values (NaNs) and variability across the dataset.
 
-**For all analyses of functional data from BOLD5000, we highly recommend utilizing data from Release 2.0.**
+To prepare the data for alignment with CLIP, several preprocessing steps were performed:
 
-Moving forward, we will continue to update BOLD5000 Release 2.0 with additional data versions, files for defining functional ROIs, and other relevant additions. If you would like to be notified, please sign up for our listserv [here](https://docs.google.com/forms/d/e/1FAIpQLScdxRc7eKOpZv5Yc6sfzWP5gi0egkDtNSPedVqpvtx_3yw4pg/viewform).
+Flattening the Data: The 4D fMRI data was flattened to create a 2D structure, where each row represents a voxel's response over time. This was essential for applying further transformations and reducing data dimensionality.
 
-To access BIDS-formatted raw MRI data files, experimental stimuli, behavioral data, physiological data, scanning protocols, image labels, and code from the experimment, please refer to the [Dataset Download](https://bold5000-dataset.github.io/website/download.html) page. 
+Handling Missing Values: Missing values were handled by using a mean imputation strategy, replacing NaNs with the mean value of the corresponding feature.
 
-# **Methods for improved data quality**
+Dimensionality Reduction: Due to the high dimensionality of the fMRI data, Principal Component Analysis (PCA) was used to reduce the number of features to 50 components. This helped to mitigate computational load and focused the analysis on the most significant variance in the data.
 
-Data included in BOLD5000 Release 2.0 integrate three techniques designed to improve the accuracy of trial-wise GLM beta estimates:
+3. Methodology
 
-1.  First, for each voxel, a custom hemodynamic response function (HRF) is identified from a library of candidate functions.
-    
-2.  Second, the selected HRFs are used in a cross-validated GLM in order to derive a set of optimized noise regressors from voxels unrelated to the experimental paradigm (“[GLMdenoise](https://www.frontiersin.org/articles/10.3389/fnins.2013.00247/full)”; Kay et al., 2013).
+For semantic alignment, we chose to focus on image data instead of textual descriptions. The decision was based on the nature of the BOLD5000 dataset, which explicitly provides visual stimuli corresponding to fMRI scans. By using images, we could more directly evaluate the correlation between visual inputs and brain responses. The CLIP (Contrastive Language-Image Pre-training) model was utilized to generate semantic embeddings for the images, which were then aligned with the fMRI data.
 
-3. Third, to mitigate the effects of signal overlap, beta estimates are regularized on a voxel-by-voxel basis using ridge regression (“[Fracridge](https://arxiv.org/pdf/2005.03220v1.pdf)” Kay & Rokem, 2020).
+Model Architecture and Alignment Process
 
-See the “GLM Analysis” section of the newly-available [Natural Scenes Dataset preprint](https://www.biorxiv.org/content/10.1101/2021.02.22.432340v1) for further details on these methods. Code for these approaches will be released in the near future – **if you would like to be notified, please sign up for our listserv [here](https://docs.google.com/forms/d/e/1FAIpQLScdxRc7eKOpZv5Yc6sfzWP5gi0egkDtNSPedVqpvtx_3yw4pg/viewform).**
+Feature Extraction and Normalization: fMRI features were extracted after PCA reduction and then standardized to ensure that both fMRI and image embeddings were on comparable scales. The image features were generated using the CLIP model's image encoder and similarly normalized.
 
-# **Code for Release 2.0**
+Linear Transformation for Dimensional Alignment: A linear layer was implemented to transform the fMRI features to match the dimensionality of the CLIP image embeddings. This transformation included two fully connected layers with a ReLU activation function in between, allowing the model to capture more complex relationships between fMRI and image embeddings.
 
-Code included in this repository can be used to replicate GLM fitting from BOLD5000 Release 2.0 using BIDS-formatted data. 
+Cosine Similarity and Contrastive Loss: The primary objective was to maximize the cosine similarity between the transformed fMRI features and the corresponding image embeddings. For training, a Cosine Embedding Loss was used, which is well-suited for this type of semantic alignment task.
 
-### Requirements ###
-Please refer to [GLMsingle](https://github.com/cvnlab/GLMsingle) for installation instructions. 
+4. Results
 
-Please refer to [fracridge](https://github.com/nrdg/fracridge) for installation instructions.
+The training process was conducted over 20 epochs, and the loss curve is presented below. Initially, the loss was relatively high, but it gradually decreased, eventually converging to near zero. This indicates that the model was able to effectively align the fMRI features with the semantic image embeddings, demonstrating successful learning of the relationships between brain activity and visual stimuli.
 
-please refer to the [Dataset Download](https://bold5000-dataset.github.io/website/download.html) for release 2.0 data download. 
 
-### Instructions ###
-After downloading the time-series data using the link above, GLM routines for a given subject/session(s) can be run using the MATLAB script `run_GLMsingle_pipeline_BOLD5000.m`.  
 
-The script `example_GLM_usage.sh` shows how to call this function: 
-```
-./example_GLM_usage.sh CSI1 1_5_10 optimize /path/to/BIDS/dataset/ output_dirname
-```
+Epochs: The x-axis represents the number of training epochs (0 to 20).
 
-Description of arguments: 
-```
-arg 1: <subj> is the string identifier for a BOLD5000 subject (CSI1, CSI2, CSI3, or CSI4) 
-determining which subject's data will be processed.
+Loss: The y-axis represents the training loss, which shows a steep decline during the first few epochs, followed by a more gradual decline.
 
-arg 2: <sess> is a string defining which sessions of data will be processed. subjects 1-3 
-completed all 15 sessions, while subject 4 completed 9 sessions. because GLMsingle relies 
-on the existence of repeated stimuli within each group of data being processed, it is 
-likely best to process several sessions of data simultaneously to maximize the available 
-image repetitions. inputs should be formatted as numbers separated by underscores - for
-example, to process data from sessions 1, 4, 9, and 13, <sess> would be "1_4_9_13".
+The final loss values indicate a good level of alignment, with the model able to capture correlations between fMRI data and semantic image information.
 
-arg 3: <GLM_method> describes which combination of GLMsingle hyperparameters should be 
-applied for this run. "assume" fits the GLM using the canonical HRF, with no denoising 
-or ridge regression. "optimize" (recommended) performs a complete run of GLMsingle 
-incorporating HRF fitting, GLMdenoise, and ridge regression. 
+5. Challenges and Solutions
 
-arg 4: <bidsdir> is a filepath pointing to the location of BOLD5000 fMRI time-series 
-data in BIDS format. these data are available here: 
-https://openneuro.org/datasets/ds001499/versions/1.3.1
+High Dimensionality: The original fMRI data was highly dimensional, which posed computational challenges. This was mitigated by using PCA for dimensionality reduction, which significantly improved the efficiency of the training process.
 
-arg 5: <outputdir> is a user-provided string that will name the folder into which 
-outputs will be saved.
-```
+Mismatch in Feature Ranges: The difference in feature ranges between fMRI and image embeddings initially led to high loss values. This was addressed by standardizing both sets of features before alignment, ensuring they were on comparable scales.
 
-# **Summary of data versions available in Release 2.0**
+Complexity of Mapping Brain Activity to Semantics: Aligning fMRI data with semantic information is inherently challenging due to the complexity of brain responses. To address this, we used a multi-layer linear transformation with a non-linear activation function, which improved the model's ability to capture complex relationships.
 
-[Click here](https://figshare.com/s/bbaf45dca1b1b873ddfa) to access the most up-to-date BOLD5000 data from Release 2.0. 
+6. Justification for Image and Dataset Selection
 
-See below for a summary of the 5 complete versions of the functional data that are available for download. **We recommend using the TYPED betas, which contain the complete set of GLM optimizations described above.**
+Image Selection: The image used for alignment was COCO_train2014_000000211198.jpg. This specific image was chosen because it represents a rich and varied visual scene, which allows us to evaluate how different aspects of a complex visual input are processed by the brain. The selected image contains multiple objects and visual elements, making it suitable for assessing the model's ability to align diverse visual features with corresponding brain activity.
 
-| Data version descriptor                  | GLM betas vs. residual time-series | HRF opt?       | GLMdenoise? | Ridge regression? | File save format             | Naming scheme                                           |
-|------------------------------------------|------------------------------------|----------------|-------------|-------------------|------------------------------|---------------------------------------------------------|
-| TYPEA-ASSUMEHRF                          | betas                              | 🚫  (canonical) | 🚫           | 🚫                 | One .nii.gz file per session | CSIX_GLMbetas-TYPEA-ASSUMEHRF_ses-XX.nii.gz            |
-| TYBEB-FITHRF                             | betas                              | ✅              | 🚫           | 🚫                 | One .nii.gz file per session | CSIX_GLMbetas-TYBEB-FITHRF_ses-XX.nii.gz               |
-| TYPEC-FITHRF-GLMDENOISE                  | betas                              | ✅              | ✅           | 🚫                 | One .nii.gz file per session | CSIX_GLMbetas-TYPEC-FITHRF-GLMDENOISE_ses-XX.nii.gz    |
-| TYPED-FITHRF-GLMDENOISE-RR (recommended) | betas                              | ✅              | ✅           | ✅                 | One .nii.gz file per session | CSIX_GLMbetas-TYPED-FITHRF-GLMDENOISE-RR_ses-XX.nii.gz |
-| SPM-RESIDUAL *                           | time series of residuals           | 🚫              | 🚫           | 🚫                 | One .nii.gz file per session | CSIX_SPMResids_allsess_TRX.nii.gz                       |
+fMRI Dataset Selection: The fMRI dataset used for this alignment was CSI1_GLMbetas-TYPED-FITHRF-GLMDENOISE-RR_ses-01.nii. This particular dataset was chosen because it represents a preprocessed version of the fMRI data, including HRF optimization, GLMdenoise, and Ridge regression (RR), which ensures cleaner signals that are better suited for alignment tasks. The use of a denoised and GLM-fitted dataset helps in reducing noise and improving the reliability of the feature extraction process.
 
-\*  SPM-RESIDUAL version refers to whole-brain data preprocessed in an identical manner to the ROI data described in the [BOLD5000 paper](https://www.nature.com/articles/s41597-019-0052-3), via fmriPrep and SPM.
+7. Conclusion
 
-# General Study Design Overview:
+The semantic alignment of fMRI data using CLIP-based contrastive tuning was successful in correlating brain responses with visual stimuli. Through careful preprocessing, dimensionality reduction, and feature transformation, we were able to train a model that effectively aligned fMRI data with image embeddings. The resulting loss curve and cosine similarity values indicate a meaningful alignment, which can serve as a foundation for further analysis in understanding brain-visual relationships.
 
-| Subject | N sessions experimental data | N trials completed | Dimensionality of subject-space volumes |
-|---------|------------------------------|--------------------|-----------------------------------------|
-| CSI1    | 15                           | 5254               | (71, 89, 72)                            |
-| CSI2    | 15                           | 5254               | (72, 92, 70)                            |
-| CSI3    | 15                           | 5254               | (72, 88, 67)                            |
-| CSI4    | 9                            | 3108               | (70, 89, 70)                            |
-
-Each experimental run contains 37 stimuli. The fMRI sampling rate is TR = 2 sec, and the resolution of each voxel is 2mm isotropic. The presentation order of the stimulus images is randomly and uniquely determined for each participant. Each image is presented for 1 sec followed by a 9 sec fixation cross. For each subject, some sessions contain 9 runs (333 stimuli each) and others contain 10 runs (370 stimuli each).
-
-# FAQs:
-
-**What makes BOLD5000 different from other large-scale fMRI datasets?**
-
-BOLD5000 contains images from the ImageNet, COCO, and SUN datasets, enabling flexible comparisons between neural responses and machine learning models trained on a diverse array of computer vision benchmarks.
-
-BOLD5000 experimental stimuli are 10 sec apart; in theory, the neural responses to stimuli in BOLD5000 should be less affected by responses to neighboring trials than in more rapid event-related designs (e.g. the Natural Scenes Dataset, which has a 4 sec inter-stimulus interval).
-
-BOLD5000 has a substantial quantity of stimuli that overlap between subjects (4916 unique images). Extensive sampling of individuals in the study does not prevent cross-subject aggregation and comparison.
-
-**Can I use BOLD5000 and the [Natural Scenes Dataset](http://naturalscenesdataset.org/) together in my analyses?**
-
-Yes! There are several thousand images that overlap between the datasets; this was a purposeful aspect of their design. This overlap directly allows users to develop models/theories using one dataset, and to then use the other as a validation or test dataset.
-
-**How have people already used BOLD5000?**
-
-        ...to [infer the similarity of different task-derived neural representations](https://openreview.net/pdf?id=ryGCaBreIB)
-
-        ...to [study how local and global symmetry differentially influence neural responses to real-world scenes](https://jov.arvojournals.org/article.aspx?articleid=2771866)
-
-        ...to [show that discriminability and similarity, at different visual levels, predict image memorability](https://www.biorxiv.org/content/10.1101/834796v3.full.pdf)
-
-        ...to [assess the similarity of cortical object and scene representations through cross-validated voxel encoding models](https://jov.arvojournals.org/article.aspx?articleid=2750674)
-
-        ...among many other contexts and studies!
-
-**Where can I access BOLD5000 v2.0 data?**
-
-All files are available for download on Figshare at the following link. [add link]
-
-**What are the differences between files available on OpenNeuro and on Figshare?**
-
-BOLD5000 v1.0 data is currently available in BIDS format on OpenNeuro [link]. Currently, v2.0 is available only on Figshare [link]. In coming months, we are planning to release BOLD5000 v2.0 data in BIDS format on OpenNeuro. Sign up here [link] if you would like to be notified about future data releases.
-
-**Where are the BOLD5000 stimulus images, and how can I download them?**
-
-Stimulus images are available for direct download on the BOLD5000 website, at the following [link](https://bold5000.github.io/download.html).
-
-**When I load a data file using TYPE A-D betas from BOLD5000 v2.0, what do the units refer to?**
-
-These values can be interpreted as percent signal change at a given voxel in response to a given experimental stimulus. Prior to saving, GLM betas were converted to units of percent signal change by dividing amplitudes by the mean signal intensity observed at each voxel and multiplying by 100.
-
-**How should I account for drifts in mean/variance of BOLD responses from session to session?**
-
-It is recommended that betas for each voxel be z-scored within each scan session prior to conducting further analysis.
-
-**Is the data format the same for all data versions in BOLD5000 v2.0?**
-
-For the TYPEA-D betas, the format is identical between versions. Session betas are stored in the (X, Y, Z, img) volumetric format.
+Further improvements could involve experimenting with different non-linear models, larger batch sizes (if computationally feasible), or incorporating temporal dynamics of fMRI data to better capture time-varying aspects of brain responses.
