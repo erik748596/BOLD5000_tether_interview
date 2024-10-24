@@ -1,4 +1,4 @@
-Semantic Alignment of fMRI Data Using CLIP
+#Semantic Alignment of fMRI Data Using CLIP
 
 1. Problem Statement
 
@@ -40,6 +40,8 @@ Loss: The y-axis represents the training loss, which shows a steep decline durin
 
 The final loss values indicate a good level of alignment, with the model able to capture correlations between fMRI data and semantic image information.
 
+![image](https://github.com/user-attachments/assets/2105a83a-aa67-4b7f-9c40-65d42390aac9)
+
 5. Challenges and Solutions
 
 High Dimensionality: The original fMRI data was highly dimensional, which posed computational challenges. This was mitigated by using PCA for dimensionality reduction, which significantly improved the efficiency of the training process.
@@ -53,6 +55,7 @@ Complexity of Mapping Brain Activity to Semantics: Aligning fMRI data with seman
 Image Selection: The image used for alignment was COCO_train2014_000000211198.jpg. This specific image was chosen because it represents a rich and varied visual scene, which allows us to evaluate how different aspects of a complex visual input are processed by the brain. The selected image contains multiple objects and visual elements, making it suitable for assessing the model's ability to align diverse visual features with corresponding brain activity.
 
 fMRI Dataset Selection: The fMRI dataset used for this alignment was CSI1_GLMbetas-TYPED-FITHRF-GLMDENOISE-RR_ses-01.nii. This particular dataset was chosen because it represents a preprocessed version of the fMRI data, including HRF optimization, GLMdenoise, and Ridge regression (RR), which ensures cleaner signals that are better suited for alignment tasks. The use of a denoised and GLM-fitted dataset helps in reducing noise and improving the reliability of the feature extraction process.
+
 
 7. Conclusion
 
