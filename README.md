@@ -16,6 +16,13 @@ Handling Missing Values: Missing values were handled by using a mean imputation 
 
 Dimensionality Reduction: Due to the high dimensionality of the fMRI data, Principal Component Analysis (PCA) was used to reduce the number of features to 50 components. This helped to mitigate computational load and focused the analysis on the most significant variance in the data.
 
+An example visualization of a slice from the fMRI data is provided below to confirm that the data was correctly loaded:
+
+![image](https://github.com/user-attachments/assets/0b1cd62e-fd35-462a-8f4a-15fff7c10f6b)
+
+
+The above image shows example slices from different runs of the fMRI data, which helped verify the correctness of the data loading process.
+
 3. Methodology
 
 For semantic alignment, we chose to focus on image data instead of textual descriptions. The decision was based on the nature of the BOLD5000 dataset, which explicitly provides visual stimuli corresponding to fMRI scans. By using images, we could more directly evaluate the correlation between visual inputs and brain responses. The CLIP (Contrastive Language-Image Pre-training) model was utilized to generate semantic embeddings for the images, which were then aligned with the fMRI data.
@@ -92,9 +99,9 @@ Complexity of Mapping Brain Activity to Semantics: Aligning fMRI data with seman
 
 6. Justification for Image and Dataset Selection
 
-Image Selection: The image used for alignment was COCO_train2014_000000211198.jpg. This specific image was chosen because it represents a rich and varied visual scene, which allows us to evaluate how different aspects of a complex visual input are processed by the brain. The selected image contains multiple objects and visual elements, making it suitable for assessing the model's ability to align diverse visual features with corresponding brain activity.
+Image Selection: The image used for alignment was 'COCO_train2014_000000211198.jpg'. This specific image was chosen because it represents a rich and varied visual scene, which allows us to evaluate how different aspects of a complex visual input are processed by the brain. The selected image contains multiple objects and visual elements, making it suitable for assessing the model's ability to align diverse visual features with corresponding brain activity.
 
-fMRI Dataset Selection: The fMRI dataset used for this alignment was CSI1_GLMbetas-TYPED-FITHRF-GLMDENOISE-RR_ses-01.nii. This particular dataset was chosen because it represents a preprocessed version of the fMRI data, including HRF optimization, GLMdenoise, and Ridge regression (RR), which ensures cleaner signals that are better suited for alignment tasks. The use of a denoised and GLM-fitted dataset helps in reducing noise and improving the reliability of the feature extraction process.
+fMRI Dataset Selection: The fMRI dataset used for this alignment was 'CSI1_GLMbetas-TYPED-FITHRF-GLMDENOISE-RR_ses-01.nii'. This particular dataset was chosen because it represents a preprocessed version of the fMRI data, including HRF optimization, GLMdenoise, and Ridge regression (RR), which ensures cleaner signals that are better suited for alignment tasks. The use of a denoised and GLM-fitted dataset helps in reducing noise and improving the reliability of the feature extraction process.
 
 
 7. Conclusion
